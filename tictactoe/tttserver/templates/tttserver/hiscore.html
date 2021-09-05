@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body id='main'>
+    <table border="1">
+        <tr>
+            <td>Player</td>
+            <td>Score</td>
+        </tr>
+        {% for ps in player_scores %}
+            <tr>
+                <td>{{ ps.player.name }}</td>
+                <td>{{ ps.score }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

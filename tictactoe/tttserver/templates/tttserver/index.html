@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<body id='main'>
+    <table border="1">
+        <tr>
+            <td id="cell1">1</td>
+            <td id="cell2">2</td>
+            <td id="cell3">3</td>
+        </tr>
+        <tr>
+            <td id="cell4">4</td>
+            <td id="cell5">5</td>
+            <td id="cell6">6</td>
+        </tr>
+            <td id="cell7">7</td>
+            <td id="cell8">8</td>
+            <td id="cell9">9</td>
+        </tr>
+    </table>
+
+    <input id="player_move" type="text" size="1"/><br/>
+    <textarea id="game_messages" cols="100" rows="1"></textarea><br/>
+</body>
+<script>
+    var socket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/game/' + {{ player_name }} + '/');
+
+    socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+
+        if ('message' in data){
+            document.querySelector('#game_messages').value = data['message'];
+        }
+
+        if ('winner' in data){
+            if (data['winner'] == 'DRAW'){
+                document.querySelector('#game_messages').value = 'Game is a draw.'
+            }
+            else{
+                document.querySelector('#game_messages').value = data['winner'] + ' wins!'
+            }
+        }
+
+        if ('board' in data){
+            var index = 1
+            for (cell_val of data['board']){
+                if (cell_val !== 'b'){
+                    docId = '#cell' + index;
+                    document.querySelector(docId).innerHTML = cell_val;
+                }
+
+                index++;
+            }
+        }
+    };
+
+    document.querySelector('#player_move').focus();
+    document.querySelector('#player_move').onkeyup = function(e) {
+        if (e.keyCode === 13) {  
+            socket.send(JSON.stringify({
+                'move': this.value
+            }));
+            this.value = '';
+        }
+    };
+
+</script>
+</html>
